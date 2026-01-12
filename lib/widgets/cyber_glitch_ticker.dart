@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 
 class CyberGlitchTicker extends StatefulWidget {
@@ -8,9 +7,10 @@ class CyberGlitchTicker extends StatefulWidget {
   State<CyberGlitchTicker> createState() => _CyberGlitchTickerState();
 }
 
-class _CyberGlitchTickerState extends State<CyberGlitchTicker> {
+class _CyberGlitchTickerState extends State<CyberGlitchTicker>
+    with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
-  late Timer _timer;
+  late AnimationController _animationController;
   final List<String> _messages = [
     "СИНХРОНИЗАЦИЯ ЯДРА: [OK]",
     "ВХОДЯЩИЙ ТРАФИК: 454.2 KB/S",
@@ -25,33 +25,20 @@ class _CyberGlitchTickerState extends State<CyberGlitchTicker> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _startScrolling());
-  }
-
-  void _startScrolling() {
-    if (!_scrollController.hasClients) return;
-
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (_scrollController.hasClients) {
-        final maxScroll = _scrollController.position.maxScrollExtent;
-        final currentScroll = _scrollController.position.pixels;
-
-        if (currentScroll >= maxScroll) {
-          _scrollController.jumpTo(0);
-        } else {
-          _scrollController.animateTo(
-            currentScroll + 1,
-            duration: const Duration(milliseconds: 50),
-            curve: Curves.linear,
-          );
-        }
-      }
-    });
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 20))
+          ..addListener(() {
+            if (_scrollController.hasClients) {
+              final maxScroll = _scrollController.position.maxScrollExtent;
+              _scrollController.jumpTo(_animationController.value * maxScroll);
+            }
+          })
+          ..repeat();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _animationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -71,13 +58,15 @@ class _CyberGlitchTickerState extends State<CyberGlitchTicker> {
           final msg = _messages[index % _messages.length];
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              msg,
-              style: const TextStyle(
-                color: Colors.white38,
-                fontSize: 8,
-                fontFamily: 'monospace',
-                letterSpacing: 2,
+            child: Center(
+              child: Text(
+                msg,
+                style: const TextStyle(
+                  color: Colors.white38,
+                  fontSize: 8,
+                  fontFamily: 'monospace',
+                  letterSpacing: 2,
+                ),
               ),
             ),
           );
