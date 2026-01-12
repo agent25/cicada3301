@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-enum SteganoFormat { text, base64, hex, decimal, binary, rot13 }
+import '../../models/stegano_format.dart';
 
 class CyberSteganoTool extends StatefulWidget {
   const CyberSteganoTool({super.key});

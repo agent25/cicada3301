@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:async';
-
-enum MediaType { text, image, audio }
+import '../../models/media_type.dart';
 
 class CyberMediaViewer extends StatefulWidget {
   final String title;

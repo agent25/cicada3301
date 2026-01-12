@@ -1,29 +1,43 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../widgets/animated_bottom_bar.dart';
-import '../widgets/animated_background.dart';
-import '../widgets/cyber_data_card.dart';
-import '../widgets/cyber_action_button.dart';
-import '../widgets/cyber_metric_gauge.dart';
-import '../widgets/cyber_circular_gauge.dart';
-import '../widgets/cyber_data_terminal.dart';
-import '../widgets/cyber_status_node.dart';
-import '../widgets/cyber_line_graph.dart';
-import '../widgets/cyber_subsystem_list.dart';
-import '../widgets/cyber_secure_keypad.dart';
-import '../widgets/cyber_encrypted_file.dart';
-import '../widgets/cyber_operator_card.dart';
-import '../widgets/cyber_category_bar.dart';
-import '../widgets/cyber_neural_pulse.dart';
-import '../widgets/cyber_radar_visualizer.dart';
-import '../widgets/cyber_system_map.dart';
-import '../widgets/cyber_audio_visualizer.dart';
-import '../widgets/cyber_glitch_ticker.dart';
-import '../widgets/cyber_biometric_scanner.dart';
-import '../widgets/cyber_rotating_hud.dart';
-import '../widgets/cyber_media_viewer.dart';
-import '../widgets/cyber_stegano_tool.dart';
+
+// Architecture - Core & Models
+import '../models/media_type.dart';
+
+// Widgets - Common
+import '../widgets/common/animated_background.dart';
+import '../widgets/common/cyber_glitch_ticker.dart';
+import '../widgets/common/cyber_data_card.dart';
+import '../widgets/common/cyber_action_button.dart';
+import '../widgets/common/cyber_metric_gauge.dart';
+import '../widgets/common/cyber_circular_gauge.dart';
+import '../widgets/common/cyber_status_node.dart';
+import '../widgets/common/cyber_line_graph.dart';
+import '../widgets/common/cyber_subsystem_list.dart';
+import '../widgets/common/cyber_neural_pulse.dart';
+import '../widgets/common/cyber_radar_visualizer.dart';
+import '../widgets/common/cyber_rotating_hud.dart';
+import '../widgets/common/cyber_audio_visualizer.dart';
+
+// Widgets - Terminal
+import '../widgets/terminal/cyber_data_terminal.dart';
+
+// Widgets - Vault
+import '../widgets/vault/cyber_secure_keypad.dart';
+import '../widgets/vault/cyber_encrypted_file.dart';
+import '../widgets/vault/cyber_operator_card.dart';
+import '../widgets/vault/cyber_biometric_scanner.dart';
+import '../widgets/vault/cyber_system_map.dart';
+
+// Widgets - Navigation
+import '../widgets/navigation/animated_bottom_bar.dart';
+import '../widgets/navigation/cyber_category_bar.dart';
+
+// Widgets - Media & Tools
+import '../widgets/media/cyber_media_viewer.dart';
+import '../widgets/media/cyber_stegano_tool.dart';
+import '../logic/terminal_processor.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -38,6 +52,7 @@ class _MainScreenState extends State<MainScreen> {
   bool _isDeepScanning = false;
   Timer? _simulationTimer;
   final math.Random _random = math.Random();
+  final TerminalProcessor _terminalProcessor = TerminalProcessor();
 
   // --- Media Viewer State ---
   String? _viewerTitle;
@@ -140,67 +155,51 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   String _generateRandomLog() {
-    final events = [
-      "[ИНФО] ПАКЕТ ДАННЫХ ОТПРАВЛЕН // УЗЕЛ_01",
-      "[ИНФО] ШИФРОВАНИЕ ОБНОВЛЕНО",
-      "[ВНИМ] ЗАДЕРЖКА СЕТИ // СЕКТОР_B",
-      "[ИНФО] БУФЕР ОЧИЩЕН",
-      "[ИНФО] СЕССИЯ ПЕРЕЗАПУЩЕНА",
-    ];
-    return events[_random.nextInt(events.length)];
+    return _terminalProcessor.generateRandomLog();
+  }
+
+  void _handleTerminalCommand(String cmd) {
+    final response = _terminalProcessor.processCommand(
+      cmd,
+      onGlobalChange: (index) => setState(() => _currentIndex = index),
+      onSubChange: (index) => setState(() => _selectedCategoryIndex = index),
+    );
+
+    if (response.triggerGlitch) {
+      AnimatedBackground.of(context)?.triggerGlitch();
+    }
+
+    if (response.categoryDelay != null) {
+      setState(() => _isDeepScanning = true);
+      Future.delayed(Duration(seconds: response.categoryDelay!), () {
+        if (mounted) setState(() => _isDeepScanning = false);
+      });
+    }
+
+    setState(() {
+      if (response.clearTerminal) {
+        _terminalLogs.clear();
+        _terminalLogs.add("[ИНФО] КЭШ ОЧИЩЕН // СИСТЕМА ЧИСТА");
+      } else {
+        for (var log in response.logs) {
+          _terminalLogs.add(log);
+        }
+      }
+      if (_terminalLogs.length > 20) _terminalLogs.removeAt(0);
+    });
   }
 
   void _handlePurge() {
-    setState(() {
-      _terminalLogs.clear();
-      _terminalLogs.add("[ИНФО] КЭШ ОЧИЩЕН // СИСТЕМА ЧИСТА");
-    });
+    _handleTerminalCommand("clear");
   }
 
   void _handleSync() {
-    _addLog("[ИНФО] ЗАПРОС РУЧНОЙ СИНХРОНИЗАЦИИ...");
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) _addLog("[ИНФО] СИНХРОНИЗАЦИЯ ЗАВЕРШЕНА");
-    });
+    _handleTerminalCommand("scan");
   }
 
   void _handleReboot() {
     AnimatedBackground.of(context)?.triggerGlitch();
-    _addLog("[КРИТ] ЗАПУСК ПЕРЕЗАГРУЗКИ УЗЛА...");
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) _addLog("[ИНФО] СИСТЕМА ПЕРЕЗАПУЩЕНА // УЗЛЫ СБРОШЕНЫ");
-    });
-  }
-
-  void _handleTerminalCommand(String cmd) {
-    _addLog("> $cmd");
-    final command = cmd.toLowerCase().trim();
-
-    if (command == "help" || command == "помощь") {
-      _addLog("[ИНФО] ДОСТУПНЫЕ КОМАНДЫ: HELP, CLEAR, REBOOT, SCAN, STATUS");
-    } else if (command == "clear" || command == "очистить") {
-      _handlePurge();
-    } else if (command == "reboot" || command == "перезагрузка") {
-      _handleReboot();
-    } else if (command == "scan" || command == "сканировать") {
-      _handleSync();
-      setState(() => _isDeepScanning = true);
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) setState(() => _isDeepScanning = false);
-      });
-    } else if (command == "status" || command == "статус") {
-      _addLog(
-        "[ИНФО] СИСТЕМА: СТАБИЛЬНА // СИНХРО: ${(_syncValue * 100).toInt()}%",
-      );
-    } else if (command == "stegano" || command == "стегано") {
-      setState(() {
-        _currentIndex = 0;
-        _selectedCategoryIndex = 4;
-      });
-      _addLog("[ИНФО] ОТКРЫТИЕ ИНСТРУМЕНТА СТЕГАНОГРАФИИ...");
-    } else {
-      _addLog("[ОШИБКА] КОМАНДА НЕ РАСПОЗНАНА: $command");
-    }
+    _handleTerminalCommand("status");
   }
 
   void _openFile(String name, String content, MediaType type) {
