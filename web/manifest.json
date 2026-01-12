@@ -1,11 +1,11 @@
 {
-    "name": "svg_flatter",
-    "short_name": "svg_flatter",
+    "name": "Cicada 3301",
+    "short_name": "Cicada 3301",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Cicada 3301: The ARG Hacking Simulator.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

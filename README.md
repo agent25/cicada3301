@@ -1,6 +1,6 @@
-# svg_flatter
+# Cicada 3301
 
-A new Flutter project.
+Cicada 3301: The ARG Hacking Simulator.
 
 ## Getting Started
 
