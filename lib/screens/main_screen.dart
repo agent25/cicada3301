@@ -23,6 +23,7 @@ import '../widgets/cyber_glitch_ticker.dart';
 import '../widgets/cyber_biometric_scanner.dart';
 import '../widgets/cyber_rotating_hud.dart';
 import '../widgets/cyber_media_viewer.dart';
+import '../widgets/cyber_stegano_tool.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -191,6 +192,12 @@ class _MainScreenState extends State<MainScreen> {
       _addLog(
         "[ИНФО] СИСТЕМА: СТАБИЛЬНА // СИНХРО: ${(_syncValue * 100).toInt()}%",
       );
+    } else if (command == "stegano" || command == "стегано") {
+      setState(() {
+        _currentIndex = 0;
+        _selectedCategoryIndex = 4;
+      });
+      _addLog("[ИНФО] ОТКРЫТИЕ ИНСТРУМЕНТА СТЕГАНОГРАФИИ...");
     } else {
       _addLog("[ОШИБКА] КОМАНДА НЕ РАСПОЗНАНА: $command");
     }
@@ -367,12 +374,18 @@ class _MainScreenState extends State<MainScreen> {
       padding: const EdgeInsets.only(top: 10, bottom: 120),
       children: [
         CyberCategoryBar(
-          categories: const ["Главная", "Память", "Процессор", "Сеть"],
+          categories: const [
+            "Главная",
+            "Память",
+            "Процессор",
+            "Сеть",
+            "Инструменты",
+          ],
           onSelected: (index) {
             setState(() {
               _selectedCategoryIndex = index;
               _addLog(
-                "[ИНФО] ПЕРЕКЛЮЧЕНИЕ СЕКТОРА: ${["ГЛАВНАЯ", "ПАМЯТЬ", "ПРОЦЕССОР", "СЕТЬ"][index]}",
+                "[ИНФО] ПЕРЕКЛЮЧЕНИЕ СЕКТОРА: ${["ГЛАВНАЯ", "ПАМЯТЬ", "ПРОЦЕССОР", "СЕТЬ", "ИНСТРУМЕНТЫ"][index]}",
               );
             });
           },
@@ -495,13 +508,15 @@ class _MainScreenState extends State<MainScreen> {
                     icon: Icons.speed,
                     accentColor: Color(0xFF6EE7B7),
                   ),
-                ] else ...[
+                ] else if (_selectedCategoryIndex == 3) ...[
                   const CyberDataCard(
                     label: "Трафик Сети",
                     value: "ВХОД // 454 КБ/С",
                     icon: Icons.network_check,
                     accentColor: Color(0xFFFBBF24),
                   ),
+                ] else ...[
+                  const CyberSteganoTool(),
                 ],
               ],
             ),
