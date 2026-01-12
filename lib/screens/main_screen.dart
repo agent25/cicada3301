@@ -237,12 +237,14 @@ class _MainScreenState extends State<MainScreen> {
                         const Color(0xFF6EE7B7),
                       ),
                     ),
+                    const SizedBox(width: 4),
                     Flexible(
                       child: _buildStatusItem(
                         "ЗАГРУЗКА // ${(100 - _integrityValue * 100).toInt()}%",
                         const Color(0xFF7DD3FC),
                       ),
                     ),
+                    const SizedBox(width: 4),
                     Flexible(
                       child: _buildStatusItem(
                         "КАНАЛ // ЗАЩИЩЕН",
@@ -371,7 +373,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildMasterControl() {
     return ListView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.only(top: 10, bottom: 120),
+      padding: const EdgeInsets.only(top: 10, bottom: 80),
       children: [
         CyberCategoryBar(
           categories: const [
@@ -384,9 +386,14 @@ class _MainScreenState extends State<MainScreen> {
           onSelected: (index) {
             setState(() {
               _selectedCategoryIndex = index;
-              _addLog(
-                "[ИНФО] ПЕРЕКЛЮЧЕНИЕ СЕКТОРА: ${["ГЛАВНАЯ", "ПАМЯТЬ", "ПРОЦЕССОР", "СЕТЬ", "ИНСТРУМЕНТЫ"][index]}",
-              );
+              final cat = [
+                "ГЛАВНАЯ",
+                "ПАМЯТЬ",
+                "ПРОЦЕССОР",
+                "СЕТЬ",
+                "ИНСТРУМЕНТЫ",
+              ][index];
+              _addLog("[ИНФО] ПЕРЕКЛЮЧЕНИЕ СЕКТОРА: $cat");
             });
           },
         ),

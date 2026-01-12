@@ -78,29 +78,33 @@ class _CyberMediaViewerState extends State<CyberMediaViewer>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "ПРОСМОТР_ДАННЫХ // ${widget.type.name.toUpperCase()}",
-                      style: TextStyle(
-                        color: const Color(0xFF6EE7B7).withValues(alpha: 0.5),
-                        fontSize: 8,
-                        letterSpacing: 2,
-                        fontFamily: 'monospace',
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "ПРОСМОТР_ДАННЫХ // ${widget.type.name.toUpperCase()}",
+                        style: TextStyle(
+                          color: const Color(0xFF6EE7B7).withValues(alpha: 0.5),
+                          fontSize: 8,
+                          letterSpacing: 2,
+                          fontFamily: 'monospace',
+                        ),
                       ),
-                    ),
-                    Text(
-                      widget.title.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
-                        fontFamily: 'monospace',
+                      Text(
+                        widget.title.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                          fontFamily: 'monospace',
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 IconButton(
                   onPressed: widget.onClose,

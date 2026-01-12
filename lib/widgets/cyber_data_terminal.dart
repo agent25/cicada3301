@@ -52,24 +52,30 @@ class _CyberDataTerminalState extends State<CyberDataTerminal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 6,
-                    height: 6,
-                    color: const Color(0xFF6EE7B7),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "СИСТЕМНЫЙ ТЕРМИНАЛ // ВВОД_АКТИВЕН",
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      fontSize: 9,
-                      letterSpacing: 2,
-                      fontFamily: 'monospace',
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      color: const Color(0xFF6EE7B7),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        "СИСТЕМНЫЙ ТЕРМИНАЛ // ВВОД_АКТИВЕН",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white24,
+                          fontSize: 9,
+                          letterSpacing: 2,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Text(
                 "УЗЕЛ: 0x8F",
